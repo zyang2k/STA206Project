@@ -1,0 +1,226 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+% !TeX program = pdfLaTeX
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx,psfrag,epsf}
+\usepackage{enumerate}
+\usepackage[]{natbib}
+\usepackage{textcomp}
+
+
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-1in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.7in}%
+\addtolength{\topmargin}{-1in}%
+
+%% load any required packages here
+
+
+
+% tightlist command for lists without linebreak
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\hypersetup{
+  pdftitle={Exploring Determinants of Plasma Retinol and Beta-Carotene Levels: The Role of Personal Characteristics and Dietary Intake},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+
+
+\begin{document}
+
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\if0\blind
+{
+  \title{\bf Exploring Determinants of Plasma Retinol and Beta-Carotene
+Levels: The Role of Personal Characteristics and Dietary Intake}
+
+  \author{
+        Ziyue Yang \\
+    \\
+     and \\     Xinyi Cen \\
+    \\
+      }
+  \maketitle
+} \fi
+
+\if1\blind
+{
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{center}
+    {\LARGE\bf Exploring Determinants of Plasma Retinol and
+Beta-Carotene Levels: The Role of Personal Characteristics and Dietary
+Intake}
+  \end{center}
+  \medskip
+} \fi
+
+\bigskip
+\begin{abstract}
+This is a test abstract.
+\end{abstract}
+
+\noindent%
+ 
+
+\vfill
+
+\newpage
+\spacingset{1.9} % DON'T change the spacing!
+
+\section{Introduction}\label{introduction}
+
+Vitamin A is an essential nutrient that supports critical physiological
+functions, including vision, immune response, reproduction, and cellular
+communication\citep{Blaner2020, Ross2014, InstituteofMedicine2000}.
+Retinol is the major biomarker used to assess vitamin A levels in
+humans\citep{Blaner2020}. It plays an essential role in maintaining
+healthy skin, supporting immune function, and regulating gene
+expression\citep{huang_role_2018}. Beta-carotene can be enzymatically
+converted to retinol in the body, making it an important dietary source
+of vitamin A\citep{grune_carotene_2010}. In addition, beta-carotene also
+acts as a powerful antioxidant\citep{fiedor_potential_2014}.
+
+This study analyzes data from a cross-sectional study designed by
+Therese Stukel, which includes 315 patients who underwent elective
+surgical procedures over a three-year period. These procedures involved
+biopsies or the removal of non-cancerous lesions from organs such as the
+lung, colon, breast, skin, ovary, or
+uterus\citep{nierenberg_determinants_1989}.
+
+Given the known associations between plasma levels of vitamin A and the
+risk of various cancers, understanding the determinants of plasma
+retinol and beta-carotene levels is critical. Investigating factors such
+as personal characteristics (e.g., sex, age, smoking status, BMI) and
+dietary intake (e.g., retinol, beta-carotene, and calorie consumption)
+will provide invaluable insights into the biological and lifestyle
+influences on these important biomarkers.
+
+\section{Methods and Results}\label{methods-and-results}
+
+We first created various visualizations as part of our exploratory data
+analysis to help understand who is in the data and acknowledge potential
+sources of bias within the data.
+
+\subsection{\texorpdfstring{Outcome Variable of Interest
+(\texttt{retplasma},
+\texttt{betaplasma})}{Outcome Variable of Interest (retplasma, betaplasma)}}\label{outcome-variable-of-interest-retplasma-betaplasma}
+
+The variables \texttt{retplasma} and \texttt{betaplasma} represent
+plasma beta-carotene and retinol levels in ng/mL respectively. According
+to the summary statistics, both variables exhibit large ranges,
+suggesting heterogeneity in the population. Skewness is evident in
+histograms of these two variables, particularly for \texttt{betaplasma}.
+The wide range and skewness suggest the need for a log transformation to
+normalize distributions and stabilize variance.
+
+\subsection{\texorpdfstring{Personal Characteristic Variables
+(\texttt{sex}, \texttt{age}, \texttt{smoke},
+\texttt{bmi})}{Personal Characteristic Variables (sex, age, smoke, bmi)}}\label{personal-characteristic-variables-sex-age-smoke-bmi}
+
+The dataset includes several personal characteristics that may influence
+plasma retinol and beta-carotene levels.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Age}, a numerical variable, ranges from 19 to 83 years, with a
+  median of 48 years and a mean of 50.18 years, indicating a slightly
+  right-skewed distribution where older individuals are slightly
+  overrepresented.
+\item
+  \textbf{Sex} is a categorical variable, with the majority of
+  participants being female (272 out of 314 individuals), highlighting a
+  potential gender imbalance in the dataset.
+\item
+  \textbf{Smoking status (smoke)} is another categorical variable, with
+  most individuals categorized as nonsmokers. Among the participants,
+  about half have never smoked, followed by a significant proportion of
+  former smokers, while current smokers are the least represented group.
+\item
+  \textbf{BMI (body mass index)}, a numerical variable, ranges from
+  16.33 to 50.40 kg/\(m^2\), with a median of 24.71 kg/\(m^2\) and a
+  mean of kg/\(m^2\), suggesting a slight skew toward higher BMI values.
+  Based on BMI categories, individuals are classified as underweight
+  (BMI \textless{} 18.5), normal weight (18.5 \(\leq\) BMI \textless{}
+  25), overweight (25 \(\leq\) BMI \textless{} 30), or obese (BMI
+  \(\geq\) 30). The majority of individuals fall within the normal
+  weight and overweight categories, with a smaller proportion classified
+  as obese or underweight.
+\end{itemize}
+
+These variables provide a snapshot of the demographic and health-related
+characteristics of the study population, which may play a role in
+influencing plasma biomarker levels.
+
+\subsection{Dietary Intake Variables}\label{dietary-intake-variables}
+
+The dataset includes several dietary intake variables that may influence
+plasma retinol and beta-carotene levels.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Vituse} (vitamin use) is a categorical variable, with most
+  participants reporting some level of vitamin use. \textbf{Calories}
+  range from 445.2 to 6662.2 kcal/day, with a mean of 1792.8 kcal/day
+  and a median of 1665 kcal/day, indicating moderate variability in
+  daily energy intake.
+\item
+  \textbf{Fat} intake ranges from 14.4 to 235.9 grams/day, with a mean
+  of 76.75 grams/day and a median of 72.9 grams/day.
+\item
+  \textbf{Fiber} intake ranges from 3.1 to 36.8 grams/day, with a median
+  of 12.1 grams/day, suggesting that many participants fall below
+  recommended daily fiber intake levels.
+\item
+  \textbf{Alcohol} consumption shows a heavily right-skewed
+  distribution, ranging from 0 to 203 drinks/week, with a mean of 3.29
+  drinks/week and a median of 0.3 drinks/week, indicating that most
+  participants consume little or no alcohol.
+\item
+  \textbf{Cholesterol} intake ranges from 37.7 to 814.7 mg/day, with a
+  mean of 240.4 mg/day and a median of 206.2 mg/day, reflecting
+  variability in dietary patterns.
+\item
+  \textbf{Betadiet}, representing dietary beta-carotene intake, ranges
+  from 214 to 9642 \(\mu\)g/day, with a mean of 2189 \(\mu\)g/day,
+  indicating substantial variation among participants. Similarly,
+\item
+  \textbf{Retdiet}, dietary retinol intake, ranges from 30 to 6901
+  \(\mu\)g/day, with a mean of 825.6 \(\mu\)/day and a median of 707
+  \(\mu\)g/day.
+\end{itemize}
+
+These dietary variables exhibit a wide range of values, reflecting
+diverse dietary habits within the study population, and are critical for
+understanding their impact on plasma biomarker levels.
+
+\bibliographystyle{apalike}
+\bibliography{bibliography.bib}
+
+
+
+\end{document}

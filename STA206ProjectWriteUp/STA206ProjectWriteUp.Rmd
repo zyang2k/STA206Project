@@ -1,0 +1,59 @@
+---
+title: "Exploring Determinants of Plasma Retinol and Beta-Carotene Levels: The Role of Personal Characteristics and Dietary Intake"
+
+# set to 1 to the authors and acknowledgements, producing the required blinded version.
+blinded: 0
+
+authors:
+- name: Ziyue Yang
+- name: Xinyi Cen
+abstract: |
+  This is a test abstract.
+
+output:
+  rticles::asa_article:
+    keep_tex: true
+bibliography: bibliography.bib
+biblio-style: apalike
+
+---
+
+# Introduction
+
+Vitamin A is an essential nutrient that supports critical physiological functions, including vision, immune response, reproduction, and cellular communication[@Blaner2020;@Ross2014;@InstituteofMedicine2000]. 
+Retinol is the major biomarker used to assess vitamin A levels in humans[@Blaner2020]. It plays an essential role in maintaining healthy skin, supporting immune function, and regulating gene expression[@huang_role_2018]. Beta-carotene can be enzymatically converted to retinol in the body, making it an important dietary source of vitamin A[@grune_carotene_2010]. In addition, beta-carotene also acts as a powerful antioxidant[@fiedor_potential_2014].
+
+This study analyzes data from a cross-sectional study designed by Therese Stukel, which includes 315 patients who underwent elective surgical procedures over a three-year period. These procedures involved biopsies or the removal of non-cancerous lesions from organs such as the lung, colon, breast, skin, ovary, or uterus[@nierenberg_determinants_1989].
+
+Given the known associations between plasma levels of vitamin A and the risk of various cancers, understanding the determinants of plasma retinol and beta-carotene levels is critical. Investigating factors such as personal characteristics (e.g., sex, age, smoking status, BMI) and dietary intake (e.g., retinol, beta-carotene, and calorie consumption) will provide invaluable insights into the biological and lifestyle influences on these important biomarkers.
+
+# Methods and Results
+
+We first created various visualizations as part of our exploratory data analysis to help understand who is in the data and acknowledge potential sources of bias within the data.
+
+## Outcome Variable of Interest (`retplasma`, `betaplasma`)
+The variables `retplasma` and `betaplasma` represent plasma beta-carotene and retinol levels in ng/mL respectively. According to the summary statistics, both variables exhibit large ranges, suggesting heterogeneity in the population. Skewness is evident in histograms of these two variables, particularly for `betaplasma`. The wide range and skewness suggest the need for a log transformation to normalize distributions and stabilize variance.
+
+## Personal Characteristic Variables (`sex`, `age`, `smoke`, `bmi`)
+The dataset includes several personal characteristics that may influence plasma retinol and beta-carotene levels. 
+
+ - **Age**, a numerical variable, ranges from 19 to 83 years, with a median of 48 years and a mean of 50.18 years, indicating a slightly right-skewed distribution where older individuals are slightly overrepresented. 
+ - **Sex** is a categorical variable, with the majority of participants being female (272 out of 314 individuals), highlighting a potential gender imbalance in the dataset. 
+ - **Smoking status (smoke)** is another categorical variable, with most individuals categorized as nonsmokers. Among the participants, about half have never smoked, followed by a significant proportion of former smokers, while current smokers are the least represented group. 
+ - **BMI (body mass index)**, a numerical variable, ranges from 16.33 to 50.40 kg/$m^2$, with a median of 24.71 kg/$m^2$ and a mean of kg/$m^2$, suggesting a slight skew toward higher BMI values. Based on BMI categories, individuals are classified as underweight (BMI < 18.5), normal weight (18.5 $\leq$ BMI < 25), overweight (25 $\leq$ BMI < 30), or obese (BMI $\geq$ 30). The majority of individuals fall within the normal weight and overweight categories, with a smaller proportion classified as obese or underweight. 
+ 
+ These variables provide a snapshot of the demographic and health-related characteristics of the study population, which may play a role in influencing plasma biomarker levels.
+
+
+## Dietary Intake Variables
+The dataset includes several dietary intake variables that may influence plasma retinol and beta-carotene levels. 
+
+ - **Vituse** (vitamin use) is a categorical variable, with most participants reporting some level of vitamin use. **Calories** range from 445.2 to 6662.2 kcal/day, with a mean of 1792.8 kcal/day and a median of 1665 kcal/day, indicating moderate variability in daily energy intake. 
+ - **Fat** intake ranges from 14.4 to 235.9 grams/day, with a mean of 76.75 grams/day and a median of 72.9 grams/day. 
+ - **Fiber** intake ranges from 3.1 to 36.8 grams/day, with a median of 12.1 grams/day, suggesting that many participants fall below recommended daily fiber intake levels. 
+ - **Alcohol** consumption shows a heavily right-skewed distribution, ranging from 0 to 203 drinks/week, with a mean of 3.29 drinks/week and a median of 0.3 drinks/week, indicating that most participants consume little or no alcohol. 
+ - **Cholesterol** intake ranges from 37.7 to 814.7 mg/day, with a mean of 240.4 mg/day and a median of 206.2 mg/day, reflecting variability in dietary patterns. 
+ - **Betadiet**, representing dietary beta-carotene intake, ranges from 214 to 9642 $\mu$g/day, with a mean of 2189 $\mu$g/day, indicating substantial variation among participants. Similarly, 
+ - **Retdiet**, dietary retinol intake, ranges from 30 to 6901 $\mu$g/day, with a mean of 825.6 $\mu$/day and a median of 707 $\mu$g/day. 
+ 
+These dietary variables exhibit a wide range of values, reflecting diverse dietary habits within the study population, and are critical for understanding their impact on plasma biomarker levels.

@@ -1,0 +1,459 @@
+---
+title: "STA206 Project"
+author: "Xinyi Cen"
+date: "2024-11-19"
+output: pdf_document
+---
+
+# Import data
+
+```{r}
+# Import the data from R library
+# all variable columns in lowercase
+library(bsamGP)
+plasma
+
+# Import the data from txt file
+# all varaible columns in uppercase
+# plasma<-read.table("/Users/centracy/Desktop/plasma.txt")
+# colnames(plasma)<-plasma[1,]
+# plasma<-plasma[-1,]
+# # Cover numerical variables as numeric, categorical variables as factor
+# num<-c('AGE','QUETELET','CALORIES','FAT','FIBER',
+#        'ALCOHOL','CHOLESTEROL','BETADIET','RETDIET','BETAPLASMA','RETPLASMA')
+# cate<-c('SEX','SMOKSTAT','VITUSE')
+# plasma[num]<-lapply(plasma[num],as.numeric)
+# plasma[cate]<-lapply(plasma[cate],as.factor)
+# plasma
+```
+
+## EDA
+```{r}
+#par()
+library(ggplot2)
+library(patchwork)
+
+p1<-ggplot(plasma,aes(x=factor(sex),y=retplasma))+
+  geom_boxplot() +
+  labs(title = paste("Boxplot of Sex vs Retplasma"), x = "Sex", y = "Plasma")
+p2<-ggplot(plasma,aes(x=factor(smoke),y=retplasma))+
+  geom_boxplot() +
+  labs(title = paste("Boxplot of Smoke vs Retplasma"), x = "Smoke", y = "Plasma")
+p3<-ggplot(plasma,aes(x=factor(vituse),y=retplasma))+
+  geom_boxplot() +
+  labs(title = paste("Boxplot of Vituse vs Retplasma"), x = "Vituse", y = "Plasma")
+p1+p2+p3
+
+p4<-ggplot(plasma,aes(x=factor(sex),y=betaplasma))+
+  geom_boxplot() +
+  labs(title = paste("Boxplot of Sex vs betaplasma"), x = "Sex", y = "Plasma")
+p5<-ggplot(plasma,aes(x=factor(smoke),y=betaplasma))+
+  geom_boxplot() +
+  labs(title = paste("Boxplot of Smoke vs Retplasma"), x = "Smoke", y = "Plasma")
+p6<-ggplot(plasma,aes(x=factor(vituse),y=betaplasma))+
+  geom_boxplot() +
+  labs(title = paste("Boxplot of Vituse vs betaplasma"), x = "Vituse", y = "Plasma")
+p4+p5+p6
+```
+
+# Response variable EDA
+```{r}
+summary(plasma$retplasma)
+plot(hist(plasma$retplasma))
+summary(plasma$betaplasma)
+plot(hist(plasma$betaplasma))
+```
+
+# Check the outliers
+```{r}
+# Consider exclude those cases to improve the prediction
+# Check the extreme outliers from the betaplasma variable which might be an input error
+plasma[which(plasma$betaplasma>1380),] # case row 40 extreme
+# Check the extreme outliers from the retplasma variable which might be an input error
+plasma[which(plasma$retplasma>1500),] # case row 20 extreme
+```
+
+# Model for personal characteristics vs betaplasma & retplasma
+- How do personal characteristics such as age, sex, and smoking status influence plasma concentrations of beta-carotene and retinol?
+
+**linear regression**
+```{r}
+# Model fit with first order
+ret<-lm(retplasma~sex+age+smoke+bmi,data=plasma)
+beta<-lm(betaplasma~sex+age+smoke+bmi,data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 2x3 layout
+
+# Residuals VS fitted
+plot(x=ret$fitted.values,y=residuals(ret),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(ret),main='Normal QQ-plot for retinol')
+qqline(residuals(ret),col='red')
+
+# Residual Box plot
+boxplot(residuals(ret),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=beta$fitted.values,y=residuals(beta),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(beta),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(beta),col='red')
+
+# Residual Box plot
+boxplot(residuals(beta),main='Residual Box Plot for beta-carotene')
+
+
+summary(ret)
+summary(beta)
+anova(ret)
+anova(beta)
+
+vif(ret)
+vif(beta)
+```
+
+**Interaction term linear regression**
+```{r}
+# Adding interaction terms in the linaer regression model
+ret1<-lm(retplasma~sex+age+smoke+sex:age+sex:smoke+smoke:age+sex:bmi+smoke:bmi+age:bmi,data=plasma)
+beta1<-lm(betaplasma~sex+age+smoke+sex:age+sex:smoke+smoke:age+sex:bmi+smoke:bmi+age:bmi,data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 1x3 layout
+
+# Residuals VS fitted
+plot(x=ret1$fitted.values,y=residuals(ret1),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(ret1),main='Normal QQ-plot for retinol')
+qqline(residuals(ret1),col='red')
+
+# Residual Box plot
+boxplot(residuals(ret1),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=beta1$fitted.values,y=residuals(beta1),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(beta1),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(beta1),col='red')
+
+# Residual Box plot
+boxplot(residuals(beta1),main='Residual Box Plot for beta-carotene ')
+
+summary(ret1)
+summary(beta1)
+anova(ret1)
+anova(beta1)
+```
+
+**Log regression model**
+```{r}
+# Preparation for the log regression model selected by ANOVA test
+anova(ret,ret1)
+anova(beta,beta1)
+# Adding interaction terms in the linear regression model
+ret2<-lm(log(retplasma)~sex+age+smoke+bmi,data=plasma)
+beta2<-lm(log(betaplasma)~sex+age+smoke+bmi,data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 1x3 layout
+
+# Residuals VS fitted
+plot(x=ret2$fitted.values,y=residuals(ret2),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(ret2),main='Normal QQ-plot for retinol')
+qqline(residuals(ret2),col='red')
+
+# Residual Box plot
+boxplot(residuals(ret2),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=beta2$fitted.values,y=residuals(beta2),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(beta2),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(beta2),col='red')
+
+# Residual Box plot
+boxplot(residuals(beta2),main='Residual Box Plot for beta-carotene ')
+
+summary(ret2)
+summary(beta2)
+anova(ret2)
+anova(beta2)
+```
+
+**Model Selection**
+```{r}
+# AIC
+aic_r<-c(AIC(ret),AIC(ret1),AIC(ret2))
+aic_b<-c(AIC(beta),AIC(beta1),AIC(beta2))
+
+#BIC
+bic_r<-c(BIC(ret),BIC(ret1),BIC(ret2))
+bic_b<-c(BIC(beta),BIC(beta1),BIC(beta2))
+
+
+comp1<-data.frame(Model = c("Simple Linear", "Interaction Terms", "Log-Transformed"),
+  AIC_ret = aic_r,
+  BIC_ret = bic_r,
+  AIC_beta=aic_b,
+  BIC_beta=bic_b)
+comp1
+
+```
+
+```{r}
+
+```
+
+```{r}
+# Outliers concern
+library(car)
+par(mfrow=c(2,2))
+term<-c('sex','age','smoke','bmi')
+for (i in term) {
+    leveragePlot(ret2, term.name = i,id = list(n = 2, col = "red"))
+}
+
+par(mfrow=c(2,2))
+for (i in term) {
+    leveragePlot(beta2, term.name = i,id = list(n = 2, col = "red"))
+}
+
+```
+
+# Dietary intake with betaplasma (included intake of dietary betaplasma) and retplasma (included intake of retplasma)
+- Is there a relationship between dietary intake of beta-carotene? If so, what is the relationship between dietary intake of beta-carotene and plasma concentrations of beta-carotene?
+- Is there a linear relationship between total caloric intake and plasma levels of beta-carotene (betaplasma)?
+
+```{r}
+rdt<-lm(log(retplasma)~vituse+calories+fat+fiber+alcohol+cholesterol+retdiet+betadiet,data=plasma)
+bdt<-lm(log(betaplasma)~vituse+calories+fat+fiber+alcohol+cholesterol+retdiet+betadiet,data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 1x3 layout
+
+# Residuals VS fitted
+plot(x=rdt$fitted.values,y=residuals(rdt),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(rdt),main='Normal QQ-plot for retinol')
+qqline(residuals(rdt),col='red')
+
+# Residual Box plot
+boxplot(residuals(rdt),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=bdt$fitted.values,y=residuals(bdt),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(bdt),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(bdt),col='red')
+
+# Residual Box plot
+boxplot(residuals(bdt),main='Residual Box Plot for beta-carotene')
+
+summary(rdt)
+anova(rdt)
+summary(bdt)
+anova(bdt)
+```
+
+**Interaction term model**
+```{r}
+# Preparation for log regression model selected terms by using stepwise AIC
+library(MASS)
+stepAIC(rdt,scope = 
+          list(
+  lower = ~ vituse + calories + fat + fiber + alcohol + cholesterol + retdiet + betadiet,
+  upper = ~ (vituse + calories + fat + fiber + alcohol + cholesterol + retdiet + betadiet)^2),
+        direction="both",k=2,trace=FALSE)$anova
+
+stepAIC(bdt,scope =list(
+  lower = ~ vituse + calories + fat + fiber + alcohol + cholesterol + retdiet + betadiet,
+  upper = ~ (vituse + calories + fat + fiber + alcohol + cholesterol + retdiet + betadiet)^2),
+        direction="both",k=2,trace=FALSE)$anova
+
+rdt1<-lm(retplasma~vituse+calories+fat+fiber+alcohol+cholesterol+retdiet+betadiet
+         +calories:alcohol+fat:fiber+vituse:betadiet,data=plasma)
+bdt1<-lm(betaplasma~vituse+calories+fat+fiber+alcohol+cholesterol+retdiet+betadiet+
+           vituse:fiber+fiber:betadiet+fat:betadiet+fat:alcohol+calories:alcohol+vituse:alcohol,
+         data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 1x3 layout
+
+# Residuals VS fitted
+plot(x=rdt1$fitted.values,y=residuals(rdt1),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(rdt1),main='Normal QQ-plot for retinol')
+qqline(residuals(rdt1),col='red')
+
+# Residual Box plot
+boxplot(residuals(rdt1),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=bdt1$fitted.values,y=residuals(bdt1),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(bdt1),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(bdt1),col='red')
+
+# Residual Box plot
+boxplot(residuals(bdt1),main='Residual Box Plot for beta-carotene')
+
+summary(rdt1)
+anova(rdt1)
+summary(bdt1)
+anova(bdt1)
+```
+
+**Polynomial Regression model**
+```{r}
+rdt2<-lm(retplasma~calories+fat+alcohol+cholesterol+vituse+I(calories^2)+I(fat^2)+I(alcohol^2)+I(cholesterol^2)+
+           calories:alcohol+fat:fiber+vituse:betadiet,data=plasma)
+bdt2<-lm(betaplasma~betadiet+fat+alcohol+fiber+vituse+I(fiber^2)+I(fat^2)+I(alcohol^2)+I(betadiet^2)
+         +vituse:fiber+fiber:betadiet+fat:betadiet+fat:alcohol+calories:alcohol+vituse:alcohol,data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 1x3 layout
+
+# Residuals VS fitted
+plot(x=rdt2$fitted.values,y=residuals(rdt2),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(rdt2),main='Normal QQ-plot for retinol')
+qqline(residuals(rdt2),col='red')
+
+# Residual Box plot
+boxplot(residuals(rdt2),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=bdt2$fitted.values,y=residuals(bdt2),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(bdt2),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(bdt2),col='red')
+
+# Residual Box plot
+boxplot(residuals(bdt2),main='Residual Box Plot for beta-carotene')
+
+summary(rdt2)
+anova(rdt2)
+summary(bdt2)
+anova(bdt2)
+```
+
+**Log-transformed Regression model**
+```{r}
+# Selection transformation model
+anova(rdt,rdt1,rdt2)
+anova(bdt,bdt1,bdt2)
+
+rdt3<-lm(log(retplasma)~vituse+calories+fat+fiber+alcohol+cholesterol+retdiet+betadiet
+         +calories:alcohol+fat:fiber+vituse:betadiet,data=plasma)
+bdt3<-lm(log(betaplasma)~vituse+calories+fat+fiber+alcohol+cholesterol+retdiet+betadiet+
+           vituse:fiber+fiber:betadiet+fat:betadiet+fat:alcohol+calories:alcohol+vituse:alcohol,data=plasma)
+
+# Assumption check
+par(mfrow = c(2, 3)) # Set the plots as 1x3 layout
+
+# Residuals VS fitted
+plot(x=rdt3$fitted.values,y=residuals(rdt3),main = "Residuals VS Fitted value for retinol",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(rdt3),main='Normal QQ-plot for retinol')
+qqline(residuals(rdt3),col='red')
+
+# Residual Box plot
+boxplot(residuals(rdt3),main='Residual Box Plot for retinol')
+
+# Residuals VS fitted
+plot(x=bdt3$fitted.values,y=residuals(bdt3),main = "Residuals VS Fitted value for beta-carotene",
+     xlab = "Fitted value",ylab = "Residuals")
+abline(h=0,col='red')
+
+# QQ plot
+qqnorm(residuals(bdt3),main='Normal QQ-plot for beta-carotene')
+qqline(residuals(bdt3),col='red')
+
+# Residual Box plot
+boxplot(residuals(bdt3),main='Residual Box Plot for beta-carotene')
+
+summary(rdt3)
+anova(rdt3)
+summary(bdt3)
+anova(bdt3)
+```
+
+**Model Selection**
+```{r}
+# AIC
+aic_r<-c(AIC(rdt),AIC(rdt1),AIC(rdt2),AIC(rdt3))
+aic_b<-c(AIC(bdt),AIC(bdt1),AIC(bdt2),AIC(bdt3))
+
+#BIC
+bic_r<-c(BIC(rdt),BIC(rdt1),BIC(rdt2),BIC(rdt3))
+bic_b<-c(BIC(bdt),BIC(bdt1),BIC(bdt2),BIC(bdt3))
+
+
+comp1<-data.frame(Model = c("Simple Linear", "Interaction Terms", "Polynoimal","Log-Transformed"),
+  AIC_ret = aic_r,
+  BIC_ret = bic_r,
+  AIC_beta=aic_b,
+  BIC_beta=bic_b)
+comp1
+
+# Outliers concern
+library(car)
+par(mfrow=c(2,6))
+term<-c('vituse','calories','fat','fiber','alcohol','cholesterol','retdiet','betadiet',
+         'calories:alcohol','fat:fiber','vituse:betadiet')
+for (i in term) {
+    leveragePlot(rdt3, term.name = i,id = list(n = 2, col = "red"))
+}
+
+par(mfrow=c(2,7))
+terms<-c('vituse','calories','fat','fiber','alcohol','cholesterol','retdiet','betadiet',
+           'vituse:fiber','fiber:betadiet','fat:betadiet','fat:alcohol','calories:alcohol','vituse:alcohol')
+for (i in terms) {
+    leveragePlot(bdt3, term.name = i,id = list(n = 2, col = "red"))
+}
+
+```
+
+
+
